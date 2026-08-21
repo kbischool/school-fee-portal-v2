@@ -42,6 +42,22 @@
         <input type="password" id="loginPassword" required autocomplete="current-password">
       </div>
       <button type="submit" class="btn-primary">Log in</button>
+      <div style="text-align:right; margin-top:10px;">
+        <button type="button" class="btn-link" id="forgotLink">Forgot password?</button>
+      </div>
+    </form>
+
+    <!-- FORGOT PASSWORD FORM -->
+    <form id="forgotForm" style="display:none;">
+      <div class="field">
+        <label for="forgotEmail">Enter your account email</label>
+        <input type="email" id="forgotEmail" required autocomplete="username">
+        <div class="hint">We'll send a link to that email to set a new password.</div>
+      </div>
+      <button type="submit" class="btn-primary">Send reset link</button>
+      <div style="text-align:center; margin-top:10px;">
+        <button type="button" class="btn-link" id="backToLoginLink">Back to log in</button>
+      </div>
     </form>
 
     <!-- CLAIM CODE FORM -->
@@ -82,16 +98,19 @@
 <script type="module">
 import {
   auth, getUserRole, claimParentCode, claimAdminCode,
-  loginEmail, loginGoogle, linkGoogleUserWithCode, watchAuthState
+  loginEmail, loginGoogle, linkGoogleUserWithCode, watchAuthState, resetPassword
 } from "./js/auth.js";
 
 const roleTabs = document.getElementById('roleTabs');
 const modeTabs = document.getElementById('modeTabs');
 const loginForm = document.getElementById('loginForm');
 const claimForm = document.getElementById('claimForm');
+const forgotForm = document.getElementById('forgotForm');
 const msgBox = document.getElementById('msgBox');
 const claimCodeLabel = document.getElementById('claimCodeLabel');
 const googleBtn = document.getElementById('googleBtn');
+const forgotLink = document.getElementById('forgotLink');
+const backToLoginLink = document.getElementById('backToLoginLink');
 
 let currentRole = 'parent';
 let currentMode = 'login';
@@ -106,7 +125,41 @@ function setMode(mode) {
   [...modeTabs.children].forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   loginForm.style.display = mode === 'login' ? 'block' : 'none';
   claimForm.style.display = mode === 'claim' ? 'block' : 'none';
+  forgotForm.style.display = 'none';
 }
+
+forgotLink.addEventListener('click', () => {
+  clearMsg();
+  loginForm.style.display = 'none';
+  claimForm.style.display = 'none';
+  forgotForm.style.display = 'block';
+  document.getElementById('forgotEmail').value = document.getElementById('loginEmail').value;
+});
+
+backToLoginLink.addEventListener('click', () => {
+  clearMsg();
+  forgotForm.style.display = 'none';
+  setMode('login');
+});
+
+forgotForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearMsg();
+  const email = document.getElementById('forgotEmail').value.trim();
+  try {
+    await resetPassword(email);
+    showMsg("If an account exists for that email, a reset link is on its way — check your inbox (and spam folder).", 'ok');
+  } catch (err) {
+    // Firebase deliberately doesn't reveal whether the email exists, to
+    // avoid leaking who has an account — so most errors here just show
+    // the same reassuring message rather than "email not found."
+    if (String(err.message || '').includes('auth/invalid-email')) {
+      showMsg("That doesn't look like a valid email address.");
+    } else {
+      showMsg("If an account exists for that email, a reset link is on its way — check your inbox (and spam folder).", 'ok');
+    }
+  }
+});
 
 roleTabs.addEventListener('click', e => { if (e.target.dataset.role) setRole(e.target.dataset.role); });
 modeTabs.addEventListener('click', e => { if (e.target.dataset.mode) setMode(e.target.dataset.mode); });

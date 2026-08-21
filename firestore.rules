@@ -47,10 +47,11 @@ service cloud.firestore {
     // a brand-new admin can create their own doc (during code claim).
     // ---------------------------------------------------------------
     match /admins/{uid} {
-      allow read: if isAdmin();
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow list: if isAdmin();
       allow create: if isSignedIn() && request.auth.uid == uid;
       allow update: if isAdmin();
-    }
+   }
 
     // ---------------------------------------------------------------
     // schoolCodes/{code} — parent first-login codes.
@@ -62,7 +63,7 @@ service cloud.firestore {
     // and only the claimer can set themselves as claimedByUid.
     // ---------------------------------------------------------------
     match /schoolCodes/{code} {
-      allow get: if isSignedIn();
+      allow get: if true;
       allow list: if isAdmin();
       allow create: if isAdmin();
       allow update: if isAdmin() || (
@@ -78,7 +79,7 @@ service cloud.firestore {
     // adminCodes/{code} — same pattern, for administrator onboarding.
     // ---------------------------------------------------------------
     match /adminCodes/{code} {
-      allow get: if isSignedIn();
+      allow get: if true;
       allow list: if isAdmin();
       allow create: if isAdmin();
       allow update: if isAdmin() || (

@@ -10,7 +10,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
-  signOut
+  signOut,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
@@ -165,4 +166,13 @@ export function watchAuthState(callback) {
 
 export async function logout() {
   await signOut(auth);
+}
+
+// -----------------------------------------------------------------
+// "Forgot password" — Firebase sends the reset link, we never see
+// or handle the actual password. Works for both parent and admin
+// accounts since both are plain Firebase Auth email/password users.
+// -----------------------------------------------------------------
+export async function resetPassword(email) {
+  await sendPasswordResetEmail(auth, email);
 }
