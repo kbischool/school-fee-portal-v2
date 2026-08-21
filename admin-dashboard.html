@@ -3,16 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>School Fee Portal — Admin</title>
+<title>KBIS Fee Portal — Admin</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+<div class="bg-atmosphere"><span></span><span></span><span></span></div>
+
 <div class="topbar">
   <div class="brand">
-    <div class="crest">S</div>
+    <img src="assets/logo.png" alt="KBIS logo" class="logo-mark">
     <div>
-      <div class="sub">School Fee Portal · Administrator</div>
+      <div class="sub">KBIS Fee Portal · Administrator</div>
       <h1 id="welcomeName">Admin</h1>
     </div>
   </div>
@@ -24,7 +26,7 @@
 
 <div class="shell">
 
-  <div class="card">
+  <div class="card fade-up">
     <div class="section-head" style="margin-top:0;">
       <h2>Issue a new parent code</h2>
     </div>
@@ -43,7 +45,7 @@
     <p style="font-size:12px;color:var(--ink-soft);margin:12px 0 0;">For bulk changes (a new term, several new students), prefer editing the spreadsheet and re-running <code>update_data.py</code> + <code>migrate_to_firestore.py</code> — use this box for one-off additions between terms.</p>
   </div>
 
-  <div class="card" style="margin-top:16px;">
+  <div class="card fade-up" style="margin-top:16px; animation-delay:0.08s;">
     <div class="section-head" style="margin-top:0;">
       <h2>Issue a new admin code</h2>
     </div>
@@ -57,7 +59,7 @@
     <div id="newAdminCodeMsg"></div>
   </div>
 
-  <div class="card" style="margin-top:16px;">
+  <div class="card fade-up" style="margin-top:16px; animation-delay:0.16s;">
     <div class="section-head" style="margin-top:0;">
       <h2>Link a code to an existing parent account</h2>
     </div>

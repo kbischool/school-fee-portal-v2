@@ -3,16 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>School Fee Portal — My Children</title>
+<title>KBIS Fee Portal — My Children</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+<div class="bg-atmosphere"><span></span><span></span><span></span></div>
+
 <div class="topbar">
   <div class="brand">
-    <div class="crest">S</div>
+    <img src="assets/logo.png" alt="KBIS logo" class="logo-mark">
     <div>
-      <div class="sub">School Fee Portal</div>
+      <div class="sub">KBIS Fee Portal</div>
       <h1 id="welcomeName">My Children</h1>
     </div>
   </div>
@@ -93,6 +95,58 @@ function formatMoney(n) {
   return '₦' + Number(n || 0).toLocaleString('en-NG', { minimumFractionDigits: 2 });
 }
 
+// Short, original, unattributed lines of encouragement — one shown at
+// random per bill, refreshed on every visit. Not quotes from any real
+// person, just KBIS's own voice.
+const EDU_QUOTES = [
+  "Every small effort today becomes tomorrow's big achievement.",
+  "Great things are built one term at a time.",
+  "Curiosity is the beginning of every great mind.",
+  "Consistency in learning shapes tomorrow's leaders.",
+  "A child's confidence grows with every question asked.",
+  "Knowledge, held with humility, carries the furthest.",
+  "The best investment a family can make is in a child's mind.",
+  "Small daily lessons quietly build a lifetime of understanding.",
+  "Every subject mastered opens a door to another.",
+  "Learning well today makes leading well possible tomorrow.",
+  "A well-supported student becomes a well-rounded adult.",
+  "Patience in learning today builds mastery for life.",
+  "Behind every bright future is a season of steady study.",
+  "Progress rarely shouts — it simply keeps showing up.",
+  "The classroom shapes character as much as it shapes minds."
+];
+function randomQuote() {
+  return EDU_QUOTES[Math.floor(Math.random() * EDU_QUOTES.length)];
+}
+
+// Circular progress ring — signature visual per bill. r=32, so
+// circumference = 2 * PI * 32 ≈ 201.06
+const RING_R = 32;
+const RING_CIRC = 2 * Math.PI * RING_R;
+function progressRingSvg(pctPaid, cleared, uniqueId) {
+  const clamped = Math.max(0, Math.min(100, pctPaid));
+  const offset = RING_CIRC - (clamped / 100) * RING_CIRC;
+  const gradId = `ringGradient-${uniqueId}`;
+  return `
+    <div class="progress-ring-wrap">
+      <svg width="74" height="74" viewBox="0 0 74 74">
+        <defs>
+          <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#22ade0"/>
+            <stop offset="100%" stop-color="#7c4dff"/>
+          </linearGradient>
+        </defs>
+        <circle class="progress-ring-track" cx="37" cy="37" r="${RING_R}"/>
+        <circle class="progress-ring-bar" cx="37" cy="37" r="${RING_R}"
+          style="--ring-circumference:${RING_CIRC}; --ring-offset:${offset}; stroke-dasharray:${RING_CIRC}; stroke:${cleared ? 'var(--good)' : `url(#${gradId})`};"/>
+      </svg>
+      <div class="progress-ring-label">
+        <span class="pct">${Math.round(clamped)}%</span>
+        <span class="pct-note">paid</span>
+      </div>
+    </div>`;
+}
+
 async function renderStudents() {
   if (!linkedStudents.length) {
     ledgerContainer.innerHTML = `<div class="empty-note">No student records are linked to your account yet. Contact the school office.</div>`;
@@ -100,6 +154,7 @@ async function renderStudents() {
   }
 
   ledgerContainer.innerHTML = '';
+  let cardIndex = 0;
   for (const studentId of linkedStudents) {
     const snap = await getDoc(doc(db, "students", studentId));
     if (!snap.exists()) continue;
@@ -107,7 +162,9 @@ async function renderStudents() {
     const term = student.terms && student.terms[currentTerm];
 
     const card = document.createElement('div');
-    card.className = 'ledger-card';
+    card.className = 'ledger-card fade-up';
+    card.style.animationDelay = `${cardIndex * 0.08}s`;
+    cardIndex++;
 
     if (!term) {
       card.innerHTML = `
@@ -124,6 +181,7 @@ async function renderStudents() {
 
     const balance = typeof term.balance === 'number' ? term.balance : (term.totalDue || 0) - (term.totalPaid || 0);
     const cleared = balance <= 0;
+    const pctPaid = term.totalDue > 0 ? (term.totalPaid / term.totalDue) * 100 : (cleared ? 100 : 0);
 
     const rowsHtml = (term.items || []).map(item => `
       <div class="ledger-row">
@@ -137,13 +195,14 @@ async function renderStudents() {
           <div class="student-name display">${student.name}</div>
           <div class="student-class">${student.class || ''}</div>
         </div>
-        <div class="stamp ${cleared ? 'cleared' : 'due'}">${cleared ? 'Cleared' : 'Balance Due'}</div>
+        ${progressRingSvg(pctPaid, cleared, studentId + '-' + currentTerm)}
       </div>
       <div class="ledger-rows">${rowsHtml || '<div class="ledger-row"><span class="label">No itemised charges recorded.</span></div>'}</div>
       <div class="ledger-total">
         <span>Total paid: <span class="money">${formatMoney(term.totalPaid)}</span> of <span class="money">${formatMoney(term.totalDue)}</span></span>
         <span class="amount money ${cleared ? 'cleared' : 'due'}">${formatMoney(Math.abs(balance))} ${cleared ? 'credit' : 'due'}</span>
-      </div>`;
+      </div>
+      <div class="quote-strip"><span class="quote-mark">&ldquo;</span>${randomQuote()}</div>`;
     ledgerContainer.appendChild(card);
   }
 }
