@@ -32,16 +32,50 @@
   <div id="ledgerContainer">
     <div class="loading">Loading your fee records…</div>
   </div>
+
+  <div class="add-child-box">
+    <button class="btn-link" id="addChildToggle">+ Add another child with a different code</button>
+    <form id="addChildForm" class="add-child-form" style="display:none;">
+      <input type="text" id="addChildCode" placeholder="Enter their code, e.g. ABDABD1000" required>
+      <button type="submit">Link</button>
+    </form>
+    <div id="addChildMsg"></div>
+  </div>
 </div>
 
 <script type="module">
-import { auth, db, getUserRole, watchAuthState, logout } from "./js/auth.js";
+import { auth, db, getUserRole, watchAuthState, logout, linkAdditionalStudentCode } from "./js/auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const termPicker = document.getElementById('termPicker');
 const ledgerContainer = document.getElementById('ledgerContainer');
+const addChildToggle = document.getElementById('addChildToggle');
+const addChildForm = document.getElementById('addChildForm');
+const addChildMsg = document.getElementById('addChildMsg');
 let currentTerm = 'term1';
 let linkedStudents = [];
+let currentUid = null;
+
+addChildToggle.addEventListener('click', () => {
+  addChildForm.style.display = addChildForm.style.display === 'none' ? 'flex' : 'none';
+  addChildMsg.innerHTML = '';
+});
+
+addChildForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  addChildMsg.innerHTML = '';
+  const code = document.getElementById('addChildCode').value;
+  try {
+    await linkAdditionalStudentCode(currentUid, code);
+    addChildMsg.innerHTML = `<div class="msg ok">Added! Their fees now show below.</div>`;
+    addChildForm.reset();
+    const parentSnap = await getDoc(doc(db, "parents", currentUid));
+    linkedStudents = parentSnap.data().linkedStudents || [];
+    renderStudents();
+  } catch (err) {
+    addChildMsg.innerHTML = `<div class="msg error">${err.message}</div>`;
+  }
+});
 
 termPicker.addEventListener('click', (e) => {
   if (!e.target.dataset.term) return;
@@ -119,6 +153,7 @@ watchAuthState(async (user) => {
   const { role, data } = await getUserRole(user.uid);
   if (role !== 'parent') { window.location.href = 'index.html'; return; }
 
+  currentUid = user.uid;
   document.getElementById('welcomeName').textContent = data.displayName ? `Welcome, ${data.displayName}` : 'My Children';
   document.getElementById('userEmail').textContent = data.email || '';
   linkedStudents = data.linkedStudents || [];

@@ -57,10 +57,30 @@
     <div id="newAdminCodeMsg"></div>
   </div>
 
+  <div class="card" style="margin-top:16px;">
+    <div class="section-head" style="margin-top:0;">
+      <h2>Link a code to an existing parent account</h2>
+    </div>
+    <p style="font-size:13px;color:var(--ink-soft);margin:0 0 14px;">Use this when a parent already has a login (from a different child's code) and a second child's code needs to be added to that same account, without the parent doing it themselves.</p>
+    <form id="linkExistingForm" class="inline-form">
+      <div class="field">
+        <label for="linkParentEmail">Parent's account email</label>
+        <input type="email" id="linkParentEmail" required placeholder="parent@example.com">
+      </div>
+      <div class="field">
+        <label for="linkChildCode">Child's code to add</label>
+        <input type="text" id="linkChildCode" required placeholder="e.g. ABDABD1000" style="text-transform:uppercase;">
+      </div>
+      <button type="submit" class="btn-primary">Link</button>
+    </form>
+    <div id="linkExistingMsg"></div>
+  </div>
+
   <div class="section-head">
     <h2>Students &amp; codes</h2>
     <span class="count" id="studentCount"></span>
   </div>
+  <p style="font-size:12px;color:var(--ink-soft);margin:-6px 0 10px;">Click any row to see full fee details.</p>
   <table class="admin-table">
     <thead>
       <tr><th>Student</th><th>Class</th><th>Code</th><th>Account status</th></tr>
@@ -72,16 +92,86 @@
 
 </div>
 
+<div id="modalRoot"></div>
+
 <script type="module">
 import { auth, db, getUserRole, watchAuthState, logout } from "./js/auth.js";
 import {
-  collection, getDocs, doc, setDoc, query
+  collection, getDocs, doc, setDoc, updateDoc, arrayUnion, getDoc, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   await logout();
   window.location.href = 'index.html';
 });
+
+function formatMoney(n) {
+  return '₦' + Number(n || 0).toLocaleString('en-NG', { minimumFractionDigits: 2 });
+}
+
+const TERM_LABELS = { term1: '1st Term', term2: '2nd Term', term3: '3rd Term' };
+
+function closeModal() {
+  document.getElementById('modalRoot').innerHTML = '';
+}
+
+async function openStudentDetail(code, studentData, codeInfo) {
+  let parentEmail = null;
+  if (codeInfo && codeInfo.claimedByUid) {
+    try {
+      const pSnap = await getDoc(doc(db, 'parents', codeInfo.claimedByUid));
+      if (pSnap.exists()) parentEmail = pSnap.data().email;
+    } catch (e) { /* ignore if not resolvable */ }
+  }
+
+  const terms = studentData.terms || {};
+  const termKeys = Object.keys(terms);
+
+  const termsHtml = termKeys.length
+    ? termKeys.map(tk => {
+        const t = terms[tk];
+        const itemsHtml = (t.items || []).map(i => `
+          <div class="detail-row"><span>${i.label}</span><span class="money">${formatMoney(i.amount)}</span></div>`).join('');
+        return `
+          <div class="modal-section">
+            <h3>${TERM_LABELS[tk] || tk}</h3>
+            ${itemsHtml || '<div class="detail-row"><span>No itemised charges recorded.</span></div>'}
+            <div class="detail-row" style="font-weight:600;">
+              <span>Total paid / due</span>
+              <span class="money">${formatMoney(t.totalPaid)} / ${formatMoney(t.totalDue)}</span>
+            </div>
+          </div>`;
+      }).join('')
+    : '<div class="modal-section"><p style="color:var(--ink-soft);font-size:14px;">No term data recorded yet.</p></div>';
+
+  const modalHtml = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-box">
+        <div class="modal-head">
+          <div>
+            <h2 style="font-size:19px;">${studentData.name}</h2>
+            <div style="font-size:13px;color:var(--ink-soft);margin-top:4px;">${studentData.class || 'Class not set'}</div>
+          </div>
+          <button class="modal-close" id="modalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-section">
+            <h3>Account</h3>
+            <div class="detail-row"><span>Code</span><span class="money">${code}</span></div>
+            <div class="detail-row"><span>Status</span><span>${codeInfo && codeInfo.claimed ? '<span class="badge claimed">Account created</span>' : '<span class="badge unclaimed">Code not yet used</span>'}</span></div>
+            ${parentEmail ? `<div class="detail-row"><span>Parent email</span><span>${parentEmail}</span></div>` : ''}
+          </div>
+          ${termsHtml}
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('modalRoot').innerHTML = modalHtml;
+  document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'modalOverlay') closeModal();
+  });
+}
 
 // Mirrors update_data.py's clean_code_fragment(): strip to A-Z0-9, first 3 chars.
 function cleanFragment(s) { return (s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 3); }
@@ -130,6 +220,7 @@ async function loadStudentsTable() {
     const student = d.data();
     const codeInfo = codesByStudent[d.id];
     const tr = document.createElement('tr');
+    tr.className = 'clickable-row';
     tr.innerHTML = `
       <td>${student.name}</td>
       <td>${student.class || '—'}</td>
@@ -139,6 +230,7 @@ async function loadStudentsTable() {
             ? '<span class="badge claimed">Account created</span>'
             : '<span class="badge unclaimed">Code not yet used</span>')
         : '—'}</td>`;
+    tr.addEventListener('click', () => openStudentDetail(d.id, student, codeInfo));
     tbody.appendChild(tr);
   });
 }
@@ -176,6 +268,44 @@ document.getElementById('newAdminCodeForm').addEventListener('submit', async (e)
     await setDoc(doc(db, 'adminCodes', code), { label, claimed: false, createdAt: new Date().toISOString() });
     msgEl.innerHTML = `<div class="msg ok">Admin code generated: <strong>${code}</strong> — share this with the new administrator for their first login.</div>`;
     e.target.reset();
+  } catch (err) {
+    msgEl.innerHTML = `<div class="msg error">${err.message}</div>`;
+  }
+});
+
+document.getElementById('linkExistingForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('linkParentEmail').value.trim();
+  const code = document.getElementById('linkChildCode').value.trim().toUpperCase();
+  const msgEl = document.getElementById('linkExistingMsg');
+  msgEl.innerHTML = '';
+  try {
+    const parentsQuery = query(collection(db, 'parents'), where('email', '==', email));
+    const parentsSnap = await getDocs(parentsQuery);
+    if (parentsSnap.empty) {
+      msgEl.innerHTML = `<div class="msg error">No parent account found with that email. They need to create an account first (using any one of their children's codes) before you can link a second child.</div>`;
+      return;
+    }
+    const parentDoc = parentsSnap.docs[0];
+
+    const codeRef = doc(db, 'schoolCodes', code);
+    const codeSnap = await getDoc(codeRef);
+    if (!codeSnap.exists()) {
+      msgEl.innerHTML = `<div class="msg error">That code wasn't recognized.</div>`;
+      return;
+    }
+    const codeData = codeSnap.data();
+    if (codeData.claimed) {
+      msgEl.innerHTML = `<div class="msg error">This code has already been used elsewhere.</div>`;
+      return;
+    }
+
+    await updateDoc(doc(db, 'parents', parentDoc.id), { linkedStudents: arrayUnion(codeData.studentId) });
+    await updateDoc(codeRef, { claimed: true, claimedByUid: parentDoc.id, claimedAt: new Date().toISOString() });
+
+    msgEl.innerHTML = `<div class="msg ok">Linked — ${email} will now see this child too, next time they log in.</div>`;
+    e.target.reset();
+    loadStudentsTable();
   } catch (err) {
     msgEl.innerHTML = `<div class="msg error">${err.message}</div>`;
   }
