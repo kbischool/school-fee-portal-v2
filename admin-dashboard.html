@@ -233,10 +233,10 @@ async function loadStudentsTable() {
     const tr = document.createElement('tr');
     tr.className = 'clickable-row';
     tr.innerHTML = `
-      <td>${student.name}</td>
-      <td>${student.class || '—'}</td>
-      <td class="money">${codeInfo ? codeInfo.code : '—'}</td>
-      <td>${codeInfo
+      <td data-label="Student">${student.name}</td>
+      <td data-label="Class">${student.class || '—'}</td>
+      <td data-label="Code" class="money">${codeInfo ? codeInfo.code : '—'}</td>
+      <td data-label="Status">${codeInfo
         ? (codeInfo.claimed
             ? '<span class="badge claimed">Account created</span>'
             : '<span class="badge unclaimed">Code not yet used</span>')
