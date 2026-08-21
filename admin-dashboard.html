@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KBIS Fee Portal — Admin</title>
+<meta name="theme-color" content="#22ade0">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="KBIS Fees">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -83,6 +90,7 @@
     <span class="count" id="studentCount"></span>
   </div>
   <p style="font-size:12px;color:var(--ink-soft);margin:-6px 0 10px;">Click any row to see full fee details.</p>
+  <div class="table-scroll">
   <table class="admin-table">
     <thead>
       <tr><th>Student</th><th>Class</th><th>Code</th><th>Account status</th></tr>
@@ -91,6 +99,7 @@
       <tr><td colspan="4" class="loading">Loading…</td></tr>
     </tbody>
   </table>
+  </div>
 
 </div>
 
@@ -324,5 +333,6 @@ watchAuthState(async (user) => {
 });
 </script>
 
+<script src="js/pwa-install.js"></script>
 </body>
 </html>
