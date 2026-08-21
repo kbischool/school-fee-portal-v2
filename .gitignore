@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.vscode/
+~$*.xlsx
+
+# Firebase / migration script secrets — never commit
+serviceAccountKey.json
+node_modules/
+.firebase/
+firebase-debug.log

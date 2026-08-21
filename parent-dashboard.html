@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Fee Portal — My Children</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="crest">S</div>
+    <div>
+      <div class="sub">School Fee Portal</div>
+      <h1 id="welcomeName">My Children</h1>
+    </div>
+  </div>
+  <div class="actions">
+    <span id="userEmail"></span>
+    <button id="logoutBtn">Log out</button>
+  </div>
+</div>
+
+<div class="shell">
+  <div class="term-picker" id="termPicker">
+    <button class="active" data-term="term1">1st Term</button>
+    <button data-term="term2">2nd Term</button>
+    <button data-term="term3">3rd Term</button>
+  </div>
+
+  <div id="ledgerContainer">
+    <div class="loading">Loading your fee records…</div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, db, getUserRole, watchAuthState, logout } from "./js/auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const termPicker = document.getElementById('termPicker');
+const ledgerContainer = document.getElementById('ledgerContainer');
+let currentTerm = 'term1';
+let linkedStudents = [];
+
+termPicker.addEventListener('click', (e) => {
+  if (!e.target.dataset.term) return;
+  currentTerm = e.target.dataset.term;
+  [...termPicker.children].forEach(b => b.classList.toggle('active', b === e.target));
+  renderStudents();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await logout();
+  window.location.href = 'index.html';
+});
+
+function formatMoney(n) {
+  return '₦' + Number(n || 0).toLocaleString('en-NG', { minimumFractionDigits: 2 });
+}
+
+async function renderStudents() {
+  if (!linkedStudents.length) {
+    ledgerContainer.innerHTML = `<div class="empty-note">No student records are linked to your account yet. Contact the school office.</div>`;
+    return;
+  }
+
+  ledgerContainer.innerHTML = '';
+  for (const studentId of linkedStudents) {
+    const snap = await getDoc(doc(db, "students", studentId));
+    if (!snap.exists()) continue;
+    const student = snap.data();
+    const term = student.terms && student.terms[currentTerm];
+
+    const card = document.createElement('div');
+    card.className = 'ledger-card';
+
+    if (!term) {
+      card.innerHTML = `
+        <div class="ledger-head">
+          <div>
+            <div class="student-name display">${student.name}</div>
+            <div class="student-class">${student.class || ''}</div>
+          </div>
+        </div>
+        <div class="empty-note">Records for this term aren't available yet.</div>`;
+      ledgerContainer.appendChild(card);
+      continue;
+    }
+
+    const balance = typeof term.balance === 'number' ? term.balance : (term.totalDue || 0) - (term.totalPaid || 0);
+    const cleared = balance <= 0;
+
+    const rowsHtml = (term.items || []).map(item => `
+      <div class="ledger-row">
+        <span class="label">${item.label}</span>
+        <span class="money">${formatMoney(item.amount)}</span>
+      </div>`).join('');
+
+    card.innerHTML = `
+      <div class="ledger-head">
+        <div>
+          <div class="student-name display">${student.name}</div>
+          <div class="student-class">${student.class || ''}</div>
+        </div>
+        <div class="stamp ${cleared ? 'cleared' : 'due'}">${cleared ? 'Cleared' : 'Balance Due'}</div>
+      </div>
+      <div class="ledger-rows">${rowsHtml || '<div class="ledger-row"><span class="label">No itemised charges recorded.</span></div>'}</div>
+      <div class="ledger-total">
+        <span>Total paid: <span class="money">${formatMoney(term.totalPaid)}</span> of <span class="money">${formatMoney(term.totalDue)}</span></span>
+        <span class="amount money ${cleared ? 'cleared' : 'due'}">${formatMoney(Math.abs(balance))} ${cleared ? 'credit' : 'due'}</span>
+      </div>`;
+    ledgerContainer.appendChild(card);
+  }
+}
+
+watchAuthState(async (user) => {
+  if (!user) { window.location.href = 'index.html'; return; }
+  const { role, data } = await getUserRole(user.uid);
+  if (role !== 'parent') { window.location.href = 'index.html'; return; }
+
+  document.getElementById('welcomeName').textContent = data.displayName ? `Welcome, ${data.displayName}` : 'My Children';
+  document.getElementById('userEmail').textContent = data.email || '';
+  linkedStudents = data.linkedStudents || [];
+  renderStudents();
+});
+</script>
+
+</body>
+</html>

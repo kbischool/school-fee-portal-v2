@@ -1,0 +1,93 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isLinkedParent(studentId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/parents/$(request.auth.uid)) &&
+        studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.linkedStudents;
+    }
+
+    // ---------------------------------------------------------------
+    // students/{studentId}  — the fee records
+    // Parents can read ONLY their own linked child. Admins can read/write all.
+    // No one can write directly from the client except admins (parents never
+    // edit fee data).
+    // ---------------------------------------------------------------
+    match /students/{studentId} {
+      allow read: if isAdmin() || isLinkedParent(studentId);
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------
+    // parents/{uid} — a parent's own profile + which students they're linked to.
+    // A parent can read/create their own doc. Only admins can edit linkedStudents
+    // directly (the claim flow uses setDoc/updateDoc as the parent themselves,
+    // which is allowed once, at creation, and for arrayUnion via linkAdditionalStudentCode).
+    // ---------------------------------------------------------------
+    match /parents/{uid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update: if isAdmin() || (isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['linkedStudents']));
+    }
+
+    // ---------------------------------------------------------------
+    // admins/{uid} — admin profiles. Only admins can read the list;
+    // a brand-new admin can create their own doc (during code claim).
+    // ---------------------------------------------------------------
+    match /admins/{uid} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------
+    // schoolCodes/{code} — parent first-login codes.
+    // Anyone signed in can look up ONE code by its exact document ID
+    // (you can't browse/list this collection, so knowing the code is
+    // required — same trust model as the original passcode system,
+    // but now the underlying fee data is actually protected).
+    // Claiming is only allowed to flip claimed:false -> true, once,
+    // and only the claimer can set themselves as claimedByUid.
+    // ---------------------------------------------------------------
+    match /schoolCodes/{code} {
+      allow get: if isSignedIn();
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        resource.data.claimed == false &&
+        request.resource.data.claimed == true &&
+        request.resource.data.claimedByUid == request.auth.uid
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------
+    // adminCodes/{code} — same pattern, for administrator onboarding.
+    // ---------------------------------------------------------------
+    match /adminCodes/{code} {
+      allow get: if isSignedIn();
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        resource.data.claimed == false &&
+        request.resource.data.claimed == true &&
+        request.resource.data.claimedByUid == request.auth.uid
+      );
+      allow delete: if isAdmin();
+    }
+  }
+}

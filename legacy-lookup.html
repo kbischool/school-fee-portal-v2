@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Fee Portal · 2026/2027 Session</title>
+<meta name="description" content="Private fee statement lookup for parents.">
+<meta name="theme-color" content="#171B3D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f3f4f9;
+    --surface:#ffffff;
+    --surface-alt:#eef0f7;
+    --ink:#14162b;
+    --ink-soft:#6b7086;
+    --hairline:#e5e7f1;
+    --gold:#f2a93b;
+    --gold-rgb:242,169,59;
+    --gold-ink:#8a5a0f;
+    --navy:#171b3d;
+    --navy-2:#2c2a5e;
+    --violet:#4b3a82;
+    --green:#1e9e64;
+    --green-soft:#e3f7ec;
+    --red:#e5484d;
+    --red-soft:#fdebec;
+    --radius-lg:26px;
+    --radius-md:18px;
+    --radius-sm:13px;
+    --shadow-card:0 20px 48px -22px rgba(23,27,61,0.28), 0 2px 10px rgba(23,27,61,0.06);
+    --shadow-fixed:0 -8px 24px -12px rgba(23,27,61,0.18);
+    --font-display:'Sora', 'Segoe UI', sans-serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono:'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
+    --safe-b:env(safe-area-inset-bottom, 0px);
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0c0e1c;
+      --surface:#151830;
+      --surface-alt:#1c2040;
+      --ink:#eef0f9;
+      --ink-soft:#9599b3;
+      --hairline:#2a2e52;
+      --navy:#0f1230;
+      --navy-2:#2c2a5e;
+      --violet:#5c47a8;
+      --green:#4fd996;
+      --green-soft:#12301f;
+      --red:#ff7b7f;
+      --red-soft:#3a1518;
+      --shadow-card:0 20px 48px -22px rgba(0,0,0,0.6), 0 2px 10px rgba(0,0,0,0.3);
+      --shadow-fixed:0 -8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; }
+
+  body{
+    font-family:var(--font-body);
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh; min-height:100dvh;
+    display:flex; justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .app-shell{
+    max-width:440px;
+    width:100%;
+    min-height:100vh; min-height:100dvh;
+    background:var(--surface);
+    display:flex;
+    flex-direction:column;
+    box-shadow:var(--shadow-card);
+  }
+  @media (min-width:441px){
+    body{ padding:24px 14px; }
+    .app-shell{ min-height:auto; border-radius:28px; overflow:hidden; }
+  }
+
+  /* ---- Top bar ---- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 20px 14px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand .crest{
+    width:34px; height:34px; border-radius:10px;
+    background:linear-gradient(135deg, var(--navy), var(--violet));
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:700; font-size:0.78em;
+    flex:0 0 auto;
+  }
+  .brand-name{ font-family:var(--font-display); font-weight:700; font-size:1.05em; letter-spacing:-0.01em; }
+  .session-pill{
+    font-family:var(--font-mono); font-size:0.72em; font-weight:600;
+    color:var(--gold-ink);
+    background:rgba(var(--gold-rgb),0.16);
+    padding:5px 10px; border-radius:100px; letter-spacing:0.02em;
+  }
+  @media (prefers-color-scheme: dark){ .session-pill{ color:var(--gold); } }
+
+  /* ---- Term switch ---- */
+  .term-switch{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    margin:2px 20px 16px;
+    padding:5px;
+    background:var(--surface-alt);
+    border-radius:100px;
+  }
+  .term-tab{
+    border:none; background:transparent;
+    padding:10px 6px;
+    font-family:var(--font-body); font-weight:600; font-size:0.84em;
+    color:var(--ink-soft);
+    border-radius:100px;
+    cursor:pointer;
+    transition:background .18s ease, color .18s ease, box-shadow .18s ease;
+  }
+  .term-tab.active{
+    background:var(--surface);
+    color:var(--ink);
+    box-shadow:0 4px 12px -4px rgba(23,27,61,0.22);
+  }
+  .term-tab:disabled{ cursor:wait; opacity:0.6; }
+
+  /* ---- Code entry panel ---- */
+  .code-panel{ padding:2px 20px 18px; }
+  .field-label{
+    font-size:0.76em; font-weight:600; color:var(--ink-soft);
+    display:block; margin-bottom:8px;
+  }
+  input#codeInput{
+    width:100%;
+    padding:16px 16px;
+    font-family:var(--font-mono);
+    font-size:1.15em;
+    font-weight:600;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--ink);
+    background:var(--surface-alt);
+    border:1.5px solid transparent;
+    border-radius:var(--radius-md);
+    outline:none;
+    text-align:center;
+    transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  input#codeInput::placeholder{ color:var(--ink-soft); opacity:0.55; letter-spacing:0.06em; font-weight:500; }
+  input#codeInput:focus{ border-color:var(--gold); box-shadow:0 0 0 4px rgba(var(--gold-rgb),0.18); }
+  input#codeInput:disabled{ opacity:0.55; }
+
+  button#checkBtn{
+    width:100%;
+    margin-top:10px;
+    padding:16px;
+    font-family:var(--font-display);
+    font-size:0.95em; font-weight:700;
+    color:#fff;
+    background:linear-gradient(135deg, var(--navy), var(--violet));
+    border:none;
+    border-radius:var(--radius-md);
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  button#checkBtn:active{ transform:scale(0.98); }
+  button#checkBtn:disabled{ opacity:0.55; cursor:not-allowed; }
+  button#checkBtn svg{ width:17px; height:17px; }
+
+  .hint{ margin-top:12px; font-size:0.78em; color:var(--ink-soft); line-height:1.5; text-align:center; }
+
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* ---- Result panel ---- */
+  .result-panel{ flex:1; padding:4px 20px 24px; }
+
+  .placeholder, .unavailable, .loading{ text-align:center; padding:38px 12px 10px; color:var(--ink-soft); }
+  .placeholder svg, .unavailable svg{ width:32px; height:32px; margin-bottom:12px; opacity:0.45; }
+  .placeholder p, .unavailable p{ font-size:0.92em; line-height:1.5; }
+  .unavailable strong{ color:var(--ink); display:block; font-family:var(--font-display); font-size:1.05em; margin-bottom:6px; }
+
+  .spinner{
+    width:26px; height:26px;
+    border:3px solid var(--hairline);
+    border-top:3px solid var(--gold);
+    border-radius:50%;
+    margin:0 auto 14px;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .error{
+    background:var(--red-soft);
+    border-radius:var(--radius-md);
+    padding:16px;
+    color:var(--red);
+    display:flex; gap:12px; align-items:flex-start;
+    font-size:0.9em; line-height:1.45;
+  }
+  .error svg{ width:18px; height:18px; flex:0 0 auto; margin-top:1px; }
+
+  /* ---- Statement ---- */
+  .statement{ animation:rise .35s cubic-bezier(.2,.8,.2,1); }
+  @keyframes rise{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion:reduce){ .statement{ animation:none; } }
+
+  /* virtual fee card */
+  .fee-card{
+    position:relative;
+    border-radius:var(--radius-lg);
+    padding:20px 20px 22px;
+    background:
+      radial-gradient(140px 140px at 92% -10%, rgba(var(--gold-rgb),0.35), transparent 65%),
+      linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 55%, var(--violet) 100%);
+    color:#f4f4fb;
+    overflow:hidden;
+    margin-bottom:16px;
+  }
+  .fee-card::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size:14px 14px;
+    opacity:0.5;
+    pointer-events:none;
+  }
+  .fee-card-top{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:26px; position:relative; }
+  .fee-chip{
+    width:32px; height:24px; border-radius:6px;
+    background:linear-gradient(135deg, var(--gold), #fcd58a);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.35);
+  }
+  .fee-card-badge{
+    font-size:0.68em; font-weight:600; letter-spacing:0.04em;
+    background:rgba(255,255,255,0.14);
+    padding:5px 10px; border-radius:100px;
+    white-space:nowrap;
+  }
+  .fee-card-name{ font-family:var(--font-display); font-weight:700; font-size:1.14em; line-height:1.25; position:relative; }
+  .fee-card-code{
+    font-family:var(--font-mono); font-size:0.82em; letter-spacing:0.14em;
+    color:rgba(244,244,251,0.75); margin-top:10px; position:relative;
+  }
+
+  /* balance hero */
+  .balance-hero{
+    display:flex; align-items:center; gap:16px;
+    padding:18px 4px 20px;
+  }
+  .ring-wrap{ position:relative; flex:0 0 auto; width:68px; height:68px; }
+  .ring-wrap svg{ transform:rotate(-90deg); }
+  .ring-track{ fill:none; stroke:var(--surface-alt); stroke-width:7; }
+  .ring-fill{ fill:none; stroke:var(--gold); stroke-width:7; stroke-linecap:round; transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1); }
+  .ring-fill.paid-full{ stroke:var(--green); }
+  .ring-pct{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-weight:700; font-size:0.8em;
+  }
+  .balance-main{ flex:1; min-width:0; }
+  .balance-label{ font-size:0.76em; font-weight:600; color:var(--ink-soft); margin-bottom:2px; }
+  .balance-figure{ font-family:var(--font-display); font-weight:800; font-size:1.7em; letter-spacing:-0.02em; line-height:1.1; }
+  .balance-figure.due{ color:var(--red); }
+  .balance-figure.clear{ color:var(--green); }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:0.72em; font-weight:600;
+    padding:4px 10px; border-radius:100px; margin-top:8px;
+  }
+  .status-pill.due{ background:var(--red-soft); color:var(--red); }
+  .status-pill.clear{ background:var(--green-soft); color:var(--green); }
+  .status-pill svg{ width:11px; height:11px; }
+
+  /* stat chips */
+  .stat-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .stat-chip{
+    background:var(--surface-alt);
+    border-radius:var(--radius-md);
+    padding:13px 14px;
+  }
+  .stat-chip .s-label{ font-size:0.72em; font-weight:600; color:var(--ink-soft); margin-bottom:4px; }
+  .stat-chip .s-val{ font-family:var(--font-mono); font-weight:700; font-size:1.02em; }
+
+  /* breakdown list */
+  .ledger-title{
+    font-size:0.76em; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--ink-soft); margin-bottom:10px;
+  }
+  .ledger{ margin-bottom:8px; border-radius:var(--radius-md); overflow:hidden; background:var(--surface-alt); }
+  .ledger-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:12px 14px;
+    font-size:0.9em;
+    border-bottom:1px solid var(--hairline);
+  }
+  .ledger-row:last-child{ border-bottom:none; }
+  .ledger-cat{ color:var(--ink); font-weight:500; }
+  .ledger-amt{ font-family:var(--font-mono); font-weight:600; white-space:nowrap; }
+
+  .no-details{ font-size:0.86em; color:var(--ink-soft); padding:14px; background:var(--surface-alt); border-radius:var(--radius-md); text-align:center; }
+
+  /* sticky bottom actions */
+  .bottom-actions{
+    position:sticky;
+    bottom:0;
+    display:flex; gap:10px;
+    padding:14px 20px calc(14px + var(--safe-b));
+    background:var(--surface);
+    border-top:1px solid var(--hairline);
+    box-shadow:var(--shadow-fixed);
+    margin:20px -20px 0;
+  }
+  .action-btn{
+    flex:1;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    padding:13px 12px;
+    font-family:var(--font-body); font-size:0.86em; font-weight:600;
+    border-radius:var(--radius-sm);
+    border:1.5px solid var(--hairline);
+    background:var(--surface);
+    color:var(--ink);
+    cursor:pointer;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .action-btn:active{ transform:scale(0.97); }
+  .action-btn svg{ width:15px; height:15px; }
+  .action-btn.primary{ background:linear-gradient(135deg, var(--navy), var(--violet)); color:#fff; border-color:transparent; }
+
+  footer{ padding:14px 20px 20px; text-align:center; }
+  footer p{ font-size:0.74em; color:var(--ink-soft); line-height:1.5; }
+
+  .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+  <main class="app-shell" id="app">
+    <div class="topbar">
+      <div class="brand">
+        <span class="crest">FP</span>
+        <span class="brand-name">Fee Portal</span>
+      </div>
+      <span class="session-pill">2026/27</span>
+    </div>
+
+    <nav class="term-switch" id="termSwitch">
+      <button class="term-tab active" type="button" data-term="1st">1st Term</button>
+      <button class="term-tab" type="button" data-term="2nd">2nd Term</button>
+      <button class="term-tab" type="button" data-term="3rd">3rd Term</button>
+    </nav>
+
+    <div class="code-panel">
+      <label class="field-label" for="codeInput">Family code</label>
+      <input
+        type="text"
+        id="codeInput"
+        placeholder="ABDABD1000"
+        maxlength="20"
+        inputmode="text"
+        autocorrect="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        aria-label="Family code"
+      >
+      <button id="checkBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span>Check statement</span>
+      </button>
+      <p class="hint">Don't have a code? Contact the school office — codes aren't shared over text for privacy.</p>
+    </div>
+
+    <div class="result-panel" id="result">
+      <div class="placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 2h6l3 3v17H6V2z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+        <p>Enter your family code to view the statement</p>
+      </div>
+    </div>
+
+    <footer>
+      <p>For questions about your statement, contact the school administration.</p>
+    </footer>
+  </main>
+
+  <script>
+    const SESSION_LABEL = '2026/2027';
+    const TERMS = {
+      '1st': { file: 'students_1st_term.json', label: '1st Term' },
+      '2nd': { file: 'students_2nd_term.json', label: '2nd Term' },
+      '3rd': { file: 'students_3rd_term.json', label: '3rd Term' },
+    };
+
+    const termSwitch = document.getElementById('termSwitch');
+    const resultDiv = document.getElementById('result');
+    const codeInput = document.getElementById('codeInput');
+    const checkBtn = document.getElementById('checkBtn');
+
+    let studentData = null;
+    let currentTerm = '1st';
+
+    const ICONS = {
+      alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
+      check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>',
+      copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+      share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 12 15"/><path d="m8 6 4-4 4 4"/><path d="M4 13v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/></svg>',
+      doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 2h6l3 3v17H6V2z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>'
+    };
+
+    function naira(n) {
+      const v = Number(n) || 0;
+      return '₦' + v.toLocaleString('en-NG', { maximumFractionDigits: 0 });
+    }
+
+    function showPlaceholder() {
+      resultDiv.innerHTML = `
+        <div class="placeholder">
+          ${ICONS.doc}
+          <p>Enter your family code to view the statement</p>
+        </div>`;
+    }
+
+    function showUnavailable(label) {
+      resultDiv.innerHTML = `
+        <div class="unavailable">
+          ${ICONS.doc}
+          <strong>${label} isn't ready yet</strong>
+          <p>We'll switch this on as soon as the term's fee data is uploaded. Please check back later.</p>
+        </div>`;
+    }
+
+    function showError(message) {
+      resultDiv.innerHTML = `
+        <div class="error">
+          ${ICONS.alert}
+          <p>${escapeHtml(message)}</p>
+        </div>`;
+    }
+
+    async function selectTerm(termKey) {
+      const term = TERMS[termKey];
+      currentTerm = termKey;
+
+      Array.from(termSwitch.querySelectorAll('.term-tab')).forEach(b => {
+        b.classList.toggle('active', b.dataset.term === termKey);
+        b.disabled = true;
+      });
+
+      resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div><p>Loading ${term.label.toLowerCase()}…</p></div>`;
+
+      try {
+        const res = await fetch(term.file, { cache: 'no-store' });
+        if (!res.ok) throw new Error('not found');
+        studentData = await res.json();
+
+        if (codeInput.value.trim()) {
+          checkCode();
+        } else {
+          showPlaceholder();
+        }
+      } catch (e) {
+        studentData = null;
+        showUnavailable(term.label);
+      } finally {
+        Array.from(termSwitch.querySelectorAll('.term-tab')).forEach(b => b.disabled = false);
+      }
+    }
+
+    async function checkCode() {
+      const code = codeInput.value.trim().toUpperCase();
+
+      if (!code) {
+        showError('Please enter your family code.');
+        codeInput.focus();
+        return;
+      }
+      if (!studentData) {
+        showUnavailable(TERMS[currentTerm].label);
+        return;
+      }
+
+      resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div><p>Checking records…</p></div>`;
+      checkBtn.disabled = true;
+      codeInput.disabled = true;
+
+      try {
+        let student = studentData[code];
+        if (!student) {
+          const foundKey = Object.keys(studentData).find(k => k.toUpperCase() === code);
+          if (foundKey) student = studentData[foundKey];
+        }
+
+        if (student) {
+          displayStudent(student, code);
+        } else {
+          showError('That code doesn\'t match our records. Double-check it and try again, or contact the school office.');
+        }
+      } catch (e) {
+        console.error(e);
+        showError('Something went wrong. Please refresh and try again.');
+      } finally {
+        checkBtn.disabled = false;
+        codeInput.disabled = false;
+      }
+    }
+
+    function displayStudent(student, code) {
+      const totalFee = Number(student.total_fee) || 0;
+      const totalPaid = Number(student.total_paid) || 0;
+      const balance = Number(student.balance) || 0;
+      const pct = totalFee > 0 ? Math.max(0, Math.min(100, Math.round((totalPaid / totalFee) * 100))) : 0;
+      const isClear = balance <= 0;
+
+      const excludeKeys = ['LAST NAME', 'FIRST NAME', 'CLASS', 'TOTAL FEE', 'TOTAL PAID', 'BALANCE'];
+      const feeKeys = Object.keys(student.details || {}).filter(k => !excludeKeys.includes(k.trim().toUpperCase()));
+
+      let ledgerHtml = '';
+      let hasValues = false;
+      for (const key of feeKeys) {
+        const raw = student.details[key];
+        const numVal = parseFloat(raw);
+        const label = key.replace(/_/g, ' ').trim().replace(/\s+/g, ' ');
+        if (!isNaN(numVal) && numVal > 0) {
+          ledgerHtml += `
+            <div class="ledger-row">
+              <span class="ledger-cat">${escapeHtml(toTitle(label))}</span>
+              <span class="ledger-amt">${naira(numVal)}</span>
+            </div>`;
+          hasValues = true;
+        } else if (isNaN(numVal) && raw && raw !== '0') {
+          ledgerHtml += `
+            <div class="ledger-row">
+              <span class="ledger-cat">${escapeHtml(toTitle(label))}</span>
+              <span class="ledger-amt">${escapeHtml(raw)}</span>
+            </div>`;
+          hasValues = true;
+        }
+      }
+
+      const R = 28, C = 2 * Math.PI * R;
+      const offset = C - (pct / 100) * C;
+
+      const termLabel = TERMS[currentTerm] ? TERMS[currentTerm].label : '';
+      const shareText = `Fee Statement — ${student.name} (${student.class})\n${termLabel} · ${SESSION_LABEL}\nTotal: ${naira(totalFee)}\nPaid: ${naira(totalPaid)}\nBalance: ${naira(balance)}`;
+
+      resultDiv.innerHTML = `
+        <div class="statement">
+          <div class="fee-card">
+            <div class="fee-card-top">
+              <div class="fee-chip"></div>
+              <span class="fee-card-badge">${escapeHtml(student.class)}</span>
+            </div>
+            <div class="fee-card-name">${escapeHtml(student.name)}</div>
+            <div class="fee-card-code">${escapeHtml(code)}</div>
+          </div>
+
+          <div class="balance-hero">
+            <div class="ring-wrap">
+              <svg viewBox="0 0 64 64" width="68" height="68">
+                <circle class="ring-track" cx="32" cy="32" r="${R}"></circle>
+                <circle class="ring-fill ${pct >= 100 ? 'paid-full' : ''}" cx="32" cy="32" r="${R}"
+                  stroke-dasharray="${C}" stroke-dashoffset="${offset}"></circle>
+              </svg>
+              <div class="ring-pct">${pct}%</div>
+            </div>
+            <div class="balance-main">
+              <div class="balance-label">${isClear ? 'Balance' : 'Balance due'}</div>
+              <div class="balance-figure ${isClear ? 'clear' : 'due'}">${naira(Math.abs(balance))}</div>
+              <span class="status-pill ${isClear ? 'clear' : 'due'}">${isClear ? ICONS.check + ' Fully paid' : ICONS.alert + ' Payment pending'}</span>
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-chip">
+              <div class="s-label">Total fee</div>
+              <div class="s-val">${naira(totalFee)}</div>
+            </div>
+            <div class="stat-chip">
+              <div class="s-label">Paid</div>
+              <div class="s-val">${naira(totalPaid)}</div>
+            </div>
+          </div>
+
+          ${hasValues ? `
+            <div class="ledger-title">Breakdown</div>
+            <div class="ledger">${ledgerHtml}</div>
+          ` : '<div class="no-details">No itemised breakdown available for this term.</div>'}
+
+          <div class="bottom-actions">
+            <button class="action-btn" type="button" id="copyBtn">${ICONS.copy}<span>Copy</span></button>
+            <button class="action-btn primary" type="button" id="shareBtn">${ICONS.share}<span>Share</span></button>
+          </div>
+        </div>`;
+
+      document.getElementById('copyBtn').addEventListener('click', () => copyStatement(shareText));
+      document.getElementById('shareBtn').addEventListener('click', () => shareStatement(shareText));
+    }
+
+    function copyStatement(text) {
+      const btn = document.getElementById('copyBtn');
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = `${ICONS.check}<span>Copied</span>`;
+        setTimeout(() => { btn.innerHTML = original; }, 1600);
+      }).catch(() => {});
+    }
+
+    function shareStatement(text) {
+      if (navigator.share) {
+        navigator.share({ text }).catch(() => {});
+      } else {
+        window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+      }
+    }
+
+    function toTitle(s) {
+      return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    termSwitch.addEventListener('click', (e) => {
+      const btn = e.target.closest('.term-tab');
+      if (!btn || btn.classList.contains('active')) return;
+      selectTerm(btn.dataset.term);
+    });
+
+    checkBtn.addEventListener('click', checkCode);
+    codeInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkCode(); });
+
+    selectTerm('1st');
+    setTimeout(() => codeInput.focus(), 300);
+  </script>
+</body>
+</html>

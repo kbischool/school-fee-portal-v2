@@ -1,0 +1,607 @@
+{
+  "ABDULAZEEZ|ABDULLAH": {
+    "code": "ABDABD1000",
+    "index": 0,
+    "name": "ABDULAZEEZ ABDULLAH"
+  },
+  "ABDULAZEEZ|FIRDAOS": {
+    "code": "ABDFIR1001",
+    "index": 1,
+    "name": "ABDULAZEEZ FIRDAOS"
+  },
+  "ABDULLATEEF|MUHAMMED": {
+    "code": "ABDMUH1002",
+    "index": 2,
+    "name": "ABDULLATEEF MUHAMMED"
+  },
+  "ABIDOYE|AL-AMEER OLUWAJOMILOJU": {
+    "code": "ABIALA1003",
+    "index": 3,
+    "name": "ABIDOYE AL-AMEER OLUWAJOMILOJU"
+  },
+  "ABIDOYE|SULTAN ORODE": {
+    "code": "ABISUL1004",
+    "index": 4,
+    "name": "ABIDOYE SULTAN ORODE"
+  },
+  "ABIODUN|CHARIS ADEEWA": {
+    "code": "ABICHA1005",
+    "index": 5,
+    "name": "ABIODUN CHARIS ADEEWA"
+  },
+  "ABIODUN|DANIEL OBANIJESU": {
+    "code": "ABIDAN1006",
+    "index": 6,
+    "name": "ABIODUN DANIEL OBANIJESU"
+  },
+  "ABIODUN|SHARON ADELEWA": {
+    "code": "ABISHA1007",
+    "index": 7,
+    "name": "ABIODUN SHARON ADELEWA"
+  },
+  "ABIODUN|IVANA ADESEWA": {
+    "code": "ABIIVA1008",
+    "index": 8,
+    "name": "ABIODUN IVANA ADESEWA"
+  },
+  "ADEBOYE|ELIZABETH": {
+    "code": "ADEELI1009",
+    "index": 9,
+    "name": "ADEBOYE ELIZABETH"
+  },
+  "ADEBOYE|ENIOLA ESTHER": {
+    "code": "ADEENI1010",
+    "index": 10,
+    "name": "ADEBOYE ENIOLA ESTHER"
+  },
+  "ADEBUNMI|ADEYEMI": {
+    "code": "ADEADE1011",
+    "index": 11,
+    "name": "ADEBUNMI ADEYEMI"
+  },
+  "ADEBUNMI|ADEOLUWA": {
+    "code": "ADEADE1012",
+    "index": 12,
+    "name": "ADEBUNMI ADEOLUWA"
+  },
+  "ADEDAMOLA|IREMIDE": {
+    "code": "ADEIRE1013",
+    "index": 13,
+    "name": "ADEDAMOLA IREMIDE"
+  },
+  "ADEDAYO|DORCAS ADEMIDE": {
+    "code": "ADEDOR1014",
+    "index": 14,
+    "name": "ADEDAYO DORCAS ADEMIDE"
+  },
+  "ADEDAYO|DEBORAH ADESIRE": {
+    "code": "ADEDEB1015",
+    "index": 15,
+    "name": "ADEDAYO DEBORAH ADESIRE"
+  },
+  "ADEDOJA|FAITH MORAYOOLUWA": {
+    "code": "ADEFAI1016",
+    "index": 16,
+    "name": "ADEDOJA FAITH MORAYOOLUWA"
+  },
+  "ADEDOJA|MOJEREOLUWA PROSPER": {
+    "code": "ADEMOJ1017",
+    "index": 17,
+    "name": "ADEDOJA MOJEREOLUWA PROSPER"
+  },
+  "ADEDOJA|PRAISE": {
+    "code": "ADEPRA1018",
+    "index": 18,
+    "name": "ADEDOJA PRAISE"
+  },
+  "ADEKUNLE|MUMINAT ADEBOLA": {
+    "code": "ADEMUM1019",
+    "index": 19,
+    "name": "ADEKUNLE MUMINAT ADEBOLA"
+  },
+  "ADELOYE|PROSPER": {
+    "code": "ADEPRO1020",
+    "index": 20,
+    "name": "ADELOYE PROSPER"
+  },
+  "ADELOYE|DANIEL": {
+    "code": "ADEDAN1021",
+    "index": 21,
+    "name": "ADELOYE DANIEL"
+  },
+  "ADELOYE|EMMANUEL": {
+    "code": "ADEEMM1022",
+    "index": 22,
+    "name": "ADELOYE EMMANUEL"
+  },
+  "ADENIYI|SAMUEL DEMILADE": {
+    "code": "ADESAM1023",
+    "index": 23,
+    "name": "ADENIYI SAMUEL DEMILADE"
+  },
+  "ADENIYI|HERITAGE ADEDOYIN": {
+    "code": "ADEHER1024",
+    "index": 24,
+    "name": "ADENIYI HERITAGE ADEDOYIN"
+  },
+  "ADENIYI|ABDULQUDUS": {
+    "code": "ADEABD1025",
+    "index": 25,
+    "name": "ADENIYI ABDULQUDUS"
+  },
+  "ADEYANJU|HASBULLAH OKIKIOLA": {
+    "code": "ADEHAS1026",
+    "index": 26,
+    "name": "ADEYANJU HASBULLAH OKIKIOLA"
+  },
+  "ADEYEMI|MODADEOBA GBOLAHAN": {
+    "code": "ADEMOD1027",
+    "index": 27,
+    "name": "ADEYEMI MODADEOBA GBOLAHAN"
+  },
+  "ADEYEMI|ADETOLA PRINCESS": {
+    "code": "ADEADE1028",
+    "index": 28,
+    "name": "ADEYEMI ADETOLA PRINCESS"
+  },
+  "ADIGUN|AHNAF ARAOLA": {
+    "code": "ADIAHN1029",
+    "index": 29,
+    "name": "ADIGUN AHNAF ARAOLA"
+  },
+  "AKANDE|ZION AYANFE": {
+    "code": "AKAZIO1030",
+    "index": 30,
+    "name": "AKANDE ZION AYANFE"
+  },
+  "AKANDE|MICHELLE OREOFE": {
+    "code": "AKAMIC1031",
+    "index": 31,
+    "name": "AKANDE MICHELLE OREOFE"
+  },
+  "AKINBOSOYE|DEBORAH OLUWADARA": {
+    "code": "AKIDEB1032",
+    "index": 32,
+    "name": "AKINBOSOYE DEBORAH OLUWADARA"
+  },
+  "AKINBOSOYE|DANIEL IYANUOLUWA": {
+    "code": "AKIDAN1033",
+    "index": 33,
+    "name": "AKINBOSOYE DANIEL IYANUOLUWA"
+  },
+  "AKINDURO|GABRIELLA OLUWAFIREWAMIRI": {
+    "code": "AKIGAB1034",
+    "index": 34,
+    "name": "AKINDURO GABRIELLA OLUWAFIREWAMIRI"
+  },
+  "AKINYEMI|DANIEL": {
+    "code": "AKIDAN1035",
+    "index": 35,
+    "name": "AKINYEMI DANIEL"
+  },
+  "ALABI|ADEKUNLE": {
+    "code": "ALAADE1036",
+    "index": 36,
+    "name": "ALABI ADEKUNLE"
+  },
+  "ALADESAYE|AFOLAHANMI VINCENT": {
+    "code": "ALAAFO1037",
+    "index": 37,
+    "name": "ALADESAYE AFOLAHANMI VINCENT"
+  },
+  "ALIDU|BOLANLE AZEEZAT": {
+    "code": "ALIBOL1038",
+    "index": 38,
+    "name": "ALIDU BOLANLE AZEEZAT"
+  },
+  "AWODOLA|JOSHUA AYOMIDE": {
+    "code": "AWOJOS1039",
+    "index": 39,
+    "name": "AWODOLA JOSHUA AYOMIDE"
+  },
+  "AYEDUN|PRECIOUS OGOMIDE": {
+    "code": "AYEPRE1040",
+    "index": 40,
+    "name": "AYEDUN PRECIOUS OGOMIDE"
+  },
+  "AYODELE|SANDRA OLUWATOBILOBA": {
+    "code": "AYOSAN1041",
+    "index": 41,
+    "name": "AYODELE SANDRA OLUWATOBILOBA"
+  },
+  "BABALOLA|BRIDGET OLADOYIN": {
+    "code": "BABBRI1042",
+    "index": 42,
+    "name": "BABALOLA BRIDGET OLADOYIN"
+  },
+  "BAKARE|BEAUTY OLABISI": {
+    "code": "BAKBEA1043",
+    "index": 43,
+    "name": "BAKARE BEAUTY OLABISI"
+  },
+  "BAKARE|PRINCESS BEWAJI": {
+    "code": "BAKPRI1044",
+    "index": 44,
+    "name": "BAKARE PRINCESS BEWAJI"
+  },
+  "BENJAMIN|GRANT": {
+    "code": "BENGRA1045",
+    "index": 45,
+    "name": "BENJAMIN GRANT"
+  },
+  "DAVID|OLUWADARASIMI": {
+    "code": "DAVOLU1046",
+    "index": 46,
+    "name": "DAVID OLUWADARASIMI"
+  },
+  "DAVID|JESUTOFUNMI DARA": {
+    "code": "DAVJES1047",
+    "index": 47,
+    "name": "DAVID JESUTOFUNMI DARA"
+  },
+  "EDEM|ZENITH AYOKUNNUMI": {
+    "code": "EDEZEN1048",
+    "index": 48,
+    "name": "EDEM ZENITH AYOKUNNUMI"
+  },
+  "EMMANUEL|RUTH OLADIPUPO": {
+    "code": "EMMRUT1049",
+    "index": 49,
+    "name": "EMMANUEL RUTH OLADIPUPO"
+  },
+  "EMORDI|JULIAN KOLADE": {
+    "code": "EMOJUL1050",
+    "index": 50,
+    "name": "EMORDI JULIAN KOLADE"
+  },
+  "EMORDI|JAPHETH ENIOLA": {
+    "code": "EMOJAP1051",
+    "index": 51,
+    "name": "EMORDI JAPHETH ENIOLA"
+  },
+  "ERIC|OLUWASHINDARA FLOURISH": {
+    "code": "ERIOLU1052",
+    "index": 52,
+    "name": "ERIC OLUWASHINDARA FLOURISH"
+  },
+  "FAGBAYI|ASEOLUWA JOSHUA": {
+    "code": "FAGASE1053",
+    "index": 53,
+    "name": "FAGBAYI ASEOLUWA JOSHUA"
+  },
+  "FEYIJIMI|JADEN OLAOLUWA": {
+    "code": "FEYJAD1054",
+    "index": 54,
+    "name": "FEYIJIMI JADEN OLAOLUWA"
+  },
+  "FRANKLIN|GRACE-ANN ITSHOGHENE": {
+    "code": "FRAGRA1055",
+    "index": 55,
+    "name": "FRANKLIN GRACE-ANN ITSHOGHENE"
+  },
+  "GANFO|JOSHUA OLAMIDE": {
+    "code": "GANJOS1056",
+    "index": 56,
+    "name": "GANFO JOSHUA OLAMIDE"
+  },
+  "GANIYU|OLUWAJUEDALO FARHAN": {
+    "code": "GANOLU1057",
+    "index": 57,
+    "name": "GANIYU OLUWAJUEDALO FARHAN"
+  },
+  "HAMMED|ZAINAB ENIOLA": {
+    "code": "HAMZAI1058",
+    "index": 58,
+    "name": "HAMMED ZAINAB ENIOLA"
+  },
+  "IBITOYE|FELIX TIWATOPE": {
+    "code": "IBIFEL1059",
+    "index": 59,
+    "name": "IBITOYE FELIX TIWATOPE"
+  },
+  "IGE|OLUWAFERANMI BRIDGET": {
+    "code": "IGEOLU1060",
+    "index": 60,
+    "name": "IGE OLUWAFERANMI BRIDGET"
+  },
+  "IGE|OLUWAFEMI BRIGHT": {
+    "code": "IGEOLU1061",
+    "index": 61,
+    "name": "IGE OLUWAFEMI BRIGHT"
+  },
+  "ISSAH|IMOLE": {
+    "code": "ISSIMO1062",
+    "index": 62,
+    "name": "ISSAH IMOLE"
+  },
+  "JAMIU|FAIZAH AYANFE": {
+    "code": "JAMFAI1063",
+    "index": 63,
+    "name": "JAMIU FAIZAH AYANFE"
+  },
+  "JOHN|MICHAEL": {
+    "code": "JOHMIC1064",
+    "index": 64,
+    "name": "JOHN MICHAEL"
+  },
+  "JOHN|MISHAEL": {
+    "code": "JOHMIS1065",
+    "index": 65,
+    "name": "JOHN MISHAEL"
+  },
+  "JOHN|JEDIDAH": {
+    "code": "JOHJED1066",
+    "index": 66,
+    "name": "JOHN JEDIDAH"
+  },
+  "KELANI|AZEEZAH ADEJARE": {
+    "code": "KELAZE1067",
+    "index": 67,
+    "name": "KELANI AZEEZAH ADEJARE"
+  },
+  "KOLADE|JEMIMAH AYOMIDE": {
+    "code": "KOLJEM1068",
+    "index": 68,
+    "name": "KOLADE JEMIMAH AYOMIDE"
+  },
+  "KOLADE|JOSHUA IDEMUDIA": {
+    "code": "KOLJOS1069",
+    "index": 69,
+    "name": "KOLADE JOSHUA IDEMUDIA"
+  },
+  "KOLAWOLE|STEPHEN": {
+    "code": "KOLSTE1070",
+    "index": 70,
+    "name": "KOLAWOLE STEPHEN"
+  },
+  "KOLAWOLE|GABRIEL": {
+    "code": "KOLGAB1071",
+    "index": 71,
+    "name": "KOLAWOLE GABRIEL"
+  },
+  "KONNEH|UMAR IREBAMI": {
+    "code": "KONUMA1072",
+    "index": 72,
+    "name": "KONNEH UMAR IREBAMI"
+  },
+  "KONNEH|AYISHA GOLD": {
+    "code": "KONAYI1073",
+    "index": 73,
+    "name": "KONNEH AYISHA GOLD"
+  },
+  "MOSES|HEPHZIBAH TOLUWALASE": {
+    "code": "MOSHEP1074",
+    "index": 74,
+    "name": "MOSES HEPHZIBAH TOLUWALASE"
+  },
+  "MUTAIRU|IBRAHIM GBOLAHAN": {
+    "code": "MUTIBR1075",
+    "index": 75,
+    "name": "MUTAIRU IBRAHIM GBOLAHAN"
+  },
+  "MUTAIRU|ISMAIL ABIODUN": {
+    "code": "MUTISM1076",
+    "index": 76,
+    "name": "MUTAIRU ISMAIL ABIODUN"
+  },
+  "MUTAIRU|MARIAM OMOSHALEWA": {
+    "code": "MUTMAR1077",
+    "index": 77,
+    "name": "MUTAIRU MARIAM OMOSHALEWA"
+  },
+  "NELSON|HARRY EMMANUEL OBALOLUWA": {
+    "code": "NELHAR1078",
+    "index": 78,
+    "name": "NELSON HARRY EMMANUEL OBALOLUWA"
+  },
+  "OBEY|TAIWO EYITAYO": {
+    "code": "OBETAI1079",
+    "index": 79,
+    "name": "OBEY TAIWO EYITAYO"
+  },
+  "OBEY|KEHINDE AYOLEYI": {
+    "code": "OBEKEH1080",
+    "index": 80,
+    "name": "OBEY KEHINDE AYOLEYI"
+  },
+  "OKERINDE|JUMAIN BOLUWATIFE": {
+    "code": "OKEJUM1081",
+    "index": 81,
+    "name": "OKERINDE JUMAIN BOLUWATIFE"
+  },
+  "OKERINDE|QUDUS OLAMILEKAN": {
+    "code": "OKEQUD1082",
+    "index": 82,
+    "name": "OKERINDE QUDUS OLAMILEKAN"
+  },
+  "OLADAPO|JEMIMA OLAOLUWAKITAN": {
+    "code": "OLAJEM1083",
+    "index": 83,
+    "name": "OLADAPO JEMIMA OLAOLUWAKITAN"
+  },
+  "OLADAPO|JASON ANJOLAOLUWA": {
+    "code": "OLAJAS1084",
+    "index": 84,
+    "name": "OLADAPO JASON ANJOLAOLUWA"
+  },
+  "OLADEJO|JESUTOFUNMI PRECIOUS": {
+    "code": "OLAJES1085",
+    "index": 85,
+    "name": "OLADEJO JESUTOFUNMI PRECIOUS"
+  },
+  "OLALEMI|ADEMIDE SAMUEL": {
+    "code": "OLAADE1086",
+    "index": 86,
+    "name": "OLALEMI ADEMIDE SAMUEL"
+  },
+  "OLATUNDE|FAITHFULNESS SAMUEL": {
+    "code": "OLAFAI1087",
+    "index": 87,
+    "name": "OLATUNDE FAITHFULNESS SAMUEL"
+  },
+  "OLATUNJI|GREAT MOYINOLUWA": {
+    "code": "OLAGRE1088",
+    "index": 88,
+    "name": "OLATUNJI GREAT MOYINOLUWA"
+  },
+  "OLATUNJI|JEMIMAH OLAMIDE": {
+    "code": "OLAJEM1089",
+    "index": 89,
+    "name": "OLATUNJI JEMIMAH OLAMIDE"
+  },
+  "OLATUNJI|INIOLUWA BRIGHT": {
+    "code": "OLAINI1090",
+    "index": 90,
+    "name": "OLATUNJI INIOLUWA BRIGHT"
+  },
+  "OLOGUNDUDU|PRAISE": {
+    "code": "OLOPRA1091",
+    "index": 91,
+    "name": "OLOGUNDUDU PRAISE"
+  },
+  "OLUNIYI|LEONARD DAVID": {
+    "code": "OLULEO1092",
+    "index": 92,
+    "name": "OLUNIYI LEONARD DAVID"
+  },
+  "OLUWAFEMI|JOY TOLUWANI": {
+    "code": "OLUJOY1093",
+    "index": 93,
+    "name": "OLUWAFEMI JOY TOLUWANI"
+  },
+  "OLUWAFEMI|EMMANUEL OBALOLUWA": {
+    "code": "OLUEMM1094",
+    "index": 94,
+    "name": "OLUWAFEMI EMMANUEL OBALOLUWA"
+  },
+  "OLUWASEGUN|EMMANUEL OLUWAKOREDE": {
+    "code": "OLUEMM1095",
+    "index": 95,
+    "name": "OLUWASEGUN EMMANUEL OLUWAKOREDE"
+  },
+  "OLUWASEUN|ISRAEL ANJOLAOLUWA": {
+    "code": "OLUISR1096",
+    "index": 96,
+    "name": "OLUWASEUN ISRAEL ANJOLAOLUWA"
+  },
+  "OLUWASHOLA|MORIRE ESTHER": {
+    "code": "OLUMOR1097",
+    "index": 97,
+    "name": "OLUWASHOLA MORIRE ESTHER"
+  },
+  "OLUWASHOLA|TEMILOLUWA ELIZABETH": {
+    "code": "OLUTEM1098",
+    "index": 98,
+    "name": "OLUWASHOLA TEMILOLUWA ELIZABETH"
+  },
+  "ONOJA|MIRACLE": {
+    "code": "ONOMIR1099",
+    "index": 99,
+    "name": "ONOJA MIRACLE"
+  },
+  "OSIGWE|UGOCHUKWU DOMINION": {
+    "code": "OSIUGO1100",
+    "index": 100,
+    "name": "OSIGWE UGOCHUKWU DOMINION"
+  },
+  "OSIGWE|OSINACHI KINGDAVID": {
+    "code": "OSIOSI1101",
+    "index": 101,
+    "name": "OSIGWE OSINACHI KINGDAVID"
+  },
+  "OSUNDEYI|MAXWELL": {
+    "code": "OSUMAX1102",
+    "index": 102,
+    "name": "OSUNDEYI MAXWELL"
+  },
+  "OSUNDEYI|ALEXANDER": {
+    "code": "OSUALE1103",
+    "index": 103,
+    "name": "OSUNDEYI ALEXANDER"
+  },
+  "OYETUNJI|ISAAC ORINAYO": {
+    "code": "OYEISA1104",
+    "index": 104,
+    "name": "OYETUNJI ISAAC ORINAYO"
+  },
+  "OYETUNJI|IMOLEAYO MARY": {
+    "code": "OYEIMO1105",
+    "index": 105,
+    "name": "OYETUNJI IMOLEAYO MARY"
+  },
+  "PETER|FAVOUR ELIANA": {
+    "code": "PETFAV1106",
+    "index": 106,
+    "name": "PETER FAVOUR ELIANA"
+  },
+  "SAHEED|SALEEM": {
+    "code": "SAHSAL1107",
+    "index": 107,
+    "name": "SAHEED SALEEM"
+  },
+  "SAHEED|AZEEMAH": {
+    "code": "SAHAZE1108",
+    "index": 108,
+    "name": "SAHEED AZEEMAH"
+  },
+  "SAHEED|IBRAHIM": {
+    "code": "SAHIBR1109",
+    "index": 109,
+    "name": "SAHEED IBRAHIM"
+  },
+  "SAHEED|FARIDAT ABISOLA": {
+    "code": "SAHFAR1110",
+    "index": 110,
+    "name": "SAHEED FARIDAT ABISOLA"
+  },
+  "SANUSI|JOSIAH BRIGHT": {
+    "code": "SANJOS1111",
+    "index": 111,
+    "name": "SANUSI JOSIAH BRIGHT"
+  },
+  "SANUSI|DESIRE": {
+    "code": "SANDES1112",
+    "index": 112,
+    "name": "SANUSI DESIRE"
+  },
+  "SANUSI|BLESSING": {
+    "code": "SANBLE1113",
+    "index": 113,
+    "name": "SANUSI BLESSING"
+  },
+  "SOLAWUDEEN|IMAN ABISADE": {
+    "code": "SOLIMA1114",
+    "index": 114,
+    "name": "SOLAWUDEEN IMAN ABISADE"
+  },
+  "TEMITOPE|OLUWATIMILEYIN GODWIN": {
+    "code": "TEMOLU1115",
+    "index": 115,
+    "name": "TEMITOPE OLUWATIMILEYIN GODWIN"
+  },
+  "TEMITOPE|EMMANUEL OLUWASEMILORE": {
+    "code": "TEMEMM1116",
+    "index": 116,
+    "name": "TEMITOPE EMMANUEL OLUWASEMILORE"
+  },
+  "TIAMIYU|AISHAT WURAOLA": {
+    "code": "TIAAIS1117",
+    "index": 117,
+    "name": "TIAMIYU AISHAT WURAOLA"
+  },
+  "UDENSON|ZION": {
+    "code": "UDEZIO1118",
+    "index": 118,
+    "name": "UDENSON ZION"
+  },
+  "UDENSON|TESTIMONY": {
+    "code": "UDETES1119",
+    "index": 119,
+    "name": "UDENSON TESTIMONY"
+  },
+  "WAHAB|FAIZA ALVES": {
+    "code": "WAHFAI1120",
+    "index": 120,
+    "name": "WAHAB FAIZA ALVES"
+  }
+}

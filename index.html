@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Fee Portal — Sign In</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="center-shell">
+  <div class="auth-card">
+
+    <div class="crest-row">
+      <div class="crest">S</div>
+      <div>
+        <div class="eyebrow">School Fee Portal</div>
+        <h2>Welcome back</h2>
+      </div>
+    </div>
+
+    <div class="tabs" id="roleTabs">
+      <button class="active" data-role="parent">Parent</button>
+      <button data-role="admin">Administrator</button>
+    </div>
+
+    <div class="tabs" id="modeTabs">
+      <button class="active" data-mode="login">Log in</button>
+      <button data-mode="claim">First time (I have a code)</button>
+    </div>
+
+    <div id="msgBox"></div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-primary">Log in</button>
+    </form>
+
+    <!-- CLAIM CODE FORM -->
+    <form id="claimForm" style="display:none;">
+      <div class="field">
+        <label for="claimCode" id="claimCodeLabel">School code</label>
+        <input type="text" id="claimCode" required placeholder="e.g. ABDABD1000" style="text-transform:uppercase;">
+        <div class="hint">This is the code the school gave you. You'll only need it this once.</div>
+      </div>
+      <div class="field">
+        <label for="claimName">Your name</label>
+        <input type="text" id="claimName" required autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="claimEmail">Email</label>
+        <input type="email" id="claimEmail" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="claimPassword">Choose a password</label>
+        <input type="password" id="claimPassword" required minlength="6" autocomplete="new-password">
+        <div class="hint">At least 6 characters. This becomes your login from now on.</div>
+      </div>
+      <button type="submit" class="btn-primary">Create my account</button>
+    </form>
+
+    <div class="divider">or</div>
+    <button class="btn-google" id="googleBtn">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.66 9c0-.59.1-1.17.29-1.7V4.97H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.03l2.99-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+      Continue with Google
+    </button>
+
+    <div class="switch-row" id="switchHint">
+      First time here? Switch to the "First time" tab above and use the code the school gave you.
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  auth, getUserRole, claimParentCode, claimAdminCode,
+  loginEmail, loginGoogle, linkGoogleUserWithCode, watchAuthState
+} from "./js/auth.js";
+
+const roleTabs = document.getElementById('roleTabs');
+const modeTabs = document.getElementById('modeTabs');
+const loginForm = document.getElementById('loginForm');
+const claimForm = document.getElementById('claimForm');
+const msgBox = document.getElementById('msgBox');
+const claimCodeLabel = document.getElementById('claimCodeLabel');
+const googleBtn = document.getElementById('googleBtn');
+
+let currentRole = 'parent';
+let currentMode = 'login';
+
+function setRole(role) {
+  currentRole = role;
+  [...roleTabs.children].forEach(b => b.classList.toggle('active', b.dataset.role === role));
+  claimCodeLabel.textContent = role === 'admin' ? 'Admin code' : 'School code';
+}
+function setMode(mode) {
+  currentMode = mode;
+  [...modeTabs.children].forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  loginForm.style.display = mode === 'login' ? 'block' : 'none';
+  claimForm.style.display = mode === 'claim' ? 'block' : 'none';
+}
+
+roleTabs.addEventListener('click', e => { if (e.target.dataset.role) setRole(e.target.dataset.role); });
+modeTabs.addEventListener('click', e => { if (e.target.dataset.mode) setMode(e.target.dataset.mode); });
+
+function showMsg(text, type = 'error') {
+  msgBox.innerHTML = `<div class="msg ${type}">${text}</div>`;
+}
+function clearMsg() { msgBox.innerHTML = ''; }
+
+function goToDashboard(role) {
+  window.location.href = role === 'admin' ? 'admin-dashboard.html' : 'parent-dashboard.html';
+}
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearMsg();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  try {
+    const uid = await loginEmail(email, password);
+    const { role } = await getUserRole(uid);
+    if (!role) { showMsg("This account isn't linked to a student or admin record yet. Contact the school office."); return; }
+    if (currentRole === 'admin' && role !== 'admin') { showMsg("This is a parent account — switch to the Parent tab to log in."); return; }
+    if (currentRole === 'parent' && role !== 'parent') { showMsg("This is an administrator account — switch to the Administrator tab to log in."); return; }
+    goToDashboard(role);
+  } catch (err) {
+    showMsg(friendlyError(err));
+  }
+});
+
+claimForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearMsg();
+  const code = document.getElementById('claimCode').value;
+  const name = document.getElementById('claimName').value.trim();
+  const email = document.getElementById('claimEmail').value.trim();
+  const password = document.getElementById('claimPassword').value;
+  try {
+    if (currentRole === 'admin') {
+      await claimAdminCode(code, email, password, name);
+      goToDashboard('admin');
+    } else {
+      await claimParentCode(code, email, password, name);
+      goToDashboard('parent');
+    }
+  } catch (err) {
+    showMsg(friendlyError(err));
+  }
+});
+
+googleBtn.addEventListener('click', async () => {
+  clearMsg();
+  try {
+    const user = await loginGoogle();
+    const { role } = await getUserRole(user.uid);
+    if (role) { goToDashboard(role); return; }
+
+    // First time this Google account has been seen — need a code to link it.
+    const code = prompt(
+      currentRole === 'admin'
+        ? "First time with Google — enter your admin code to finish setup:"
+        : "First time with Google — enter your school code to finish setup:"
+    );
+    if (!code) { showMsg("A code is needed to link your Google account the first time."); return; }
+    await linkGoogleUserWithCode(user.uid, user.email, user.displayName || user.email, code, currentRole === 'admin');
+    goToDashboard(currentRole);
+  } catch (err) {
+    showMsg(friendlyError(err));
+  }
+});
+
+function friendlyError(err) {
+  const m = err && err.message ? err.message : String(err);
+  if (m.includes('auth/invalid-credential') || m.includes('auth/wrong-password')) return "Email or password didn't match. Try again, or use 'First time' if this is your first login.";
+  if (m.includes('auth/user-not-found')) return "No account found with that email. If this is your first login, use the 'First time' tab.";
+  if (m.includes('auth/email-already-in-use')) return "An account already exists with that email. Try logging in instead.";
+  if (m.includes('auth/weak-password')) return "Please choose a password with at least 6 characters.";
+  return m.replace('Firebase: ', '').replace(/\(auth\/.*\)\.?/, '').trim();
+}
+
+// If already logged in, skip straight to the right dashboard.
+watchAuthState(async (user) => {
+  if (user) {
+    const { role } = await getUserRole(user.uid);
+    if (role) goToDashboard(role);
+  }
+});
+</script>
+
+</body>
+</html>
