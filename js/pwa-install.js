@@ -9,10 +9,21 @@
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {
-      // If this fails (e.g. running from a local file:// during testing),
-      // the site still works fine, it just won't be installable/offline yet.
-    });
+    navigator.serviceWorker.register('sw.js').then((registration) => {
+      // Check for a newer sw.js every time the page loads, not just on
+      // whatever schedule the browser feels like.
+      registration.update();
+    }).catch(() => {});
+  });
+
+  // When a new service worker takes over (after a fresh deploy), reload
+  // automatically ONCE so the visitor immediately sees the latest version
+  // instead of being stuck until they manually refresh.
+  let hasReloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hasReloaded) return;
+    hasReloaded = true;
+    window.location.reload();
   });
 }
 

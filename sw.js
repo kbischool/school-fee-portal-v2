@@ -1,10 +1,15 @@
 // KBIS Fee Portal — service worker
-// Caches only the static "app shell" (HTML/CSS/JS/icons) so the app opens
-// instantly and still loads its interface offline. Fee data itself is
-// NEVER cached here — that always comes fresh from Firestore, so a parent
-// never sees a stale balance.
+// Strategy:
+//  - HTML pages: NETWORK-FIRST. Always try to fetch the latest version first;
+//    only fall back to the cached copy if there's no internet. This is what
+//    makes updates show up immediately for everyone on the next visit,
+//    instead of getting stuck on whatever was cached at install time.
+//  - CSS/JS/images: CACHE-FIRST (with a version bump below to bust old
+//    caches on this deploy). These change less often and cache-first makes
+//    the app feel instant.
+//  - Firestore/Auth/Google traffic: NEVER cached, always live.
 
-const CACHE_NAME = 'kbis-fee-portal-shell-v1';
+const CACHE_NAME = 'kbis-fee-portal-shell-v2'; // bumped: v1 -> v2 clears everyone's stale cache
 
 const SHELL_FILES = [
   'index.html',
@@ -14,6 +19,7 @@ const SHELL_FILES = [
   'css/style.css',
   'js/auth.js',
   'js/firebase-config.js',
+  'js/pwa-install.js',
   'assets/logo.png',
   'assets/icons/icon-192.png',
   'assets/icons/icon-512.png',
@@ -22,12 +28,9 @@ const SHELL_FILES = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_FILES)).catch(() => {
-      // If a file 404s during install (e.g. legacy-lookup.html was deleted),
-      // don't fail the whole install — just skip caching that one file.
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_FILES)).catch(() => {})
   );
-  self.skipWaiting();
+  self.skipWaiting(); // activate this new version immediately, don't wait for old tabs to close
 });
 
 self.addEventListener('activate', (event) => {
@@ -36,35 +39,54 @@ self.addEventListener('activate', (event) => {
       Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)))
     )
   );
-  self.clients.claim();
+  self.clients.claim(); // take control of any already-open tabs right away
 });
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Never cache Firestore/Auth/Google API traffic — always go to network,
-  // this is what keeps fee balances and login state accurate and live.
+  // Never cache Firestore/Auth/Google API traffic — always live.
   if (
     url.hostname.includes('firestore.googleapis.com') ||
     url.hostname.includes('googleapis.com') ||
     url.hostname.includes('firebaseapp.com') ||
     url.hostname.includes('google.com')
   ) {
-    return; // let the browser handle it normally, no interception
+    return;
   }
 
-  // App shell files: cache-first, so the app opens instantly and works offline.
+  const isHtmlRequest =
+    event.request.mode === 'navigate' ||
+    (event.request.headers.get('accept') || '').includes('text/html');
+
+  if (isHtmlRequest) {
+    // NETWORK-FIRST for pages: always get the newest version when online.
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok && url.origin === self.location.origin) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request)) // offline fallback only
+    );
+    return;
+  }
+
+  // CACHE-FIRST for static assets (css/js/images).
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
       return fetch(event.request).then((response) => {
-        // Only cache successful, same-origin GET responses.
         if (event.request.method === 'GET' && response.ok && url.origin === self.location.origin) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => cached); // offline and not cached: nothing we can do for this file
+      }).catch(() => cached);
     })
   );
 });
+

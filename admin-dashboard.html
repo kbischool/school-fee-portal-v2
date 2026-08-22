@@ -89,7 +89,10 @@
     <h2>Students &amp; codes</h2>
     <span class="count" id="studentCount"></span>
   </div>
-  <p style="font-size:12px;color:var(--ink-soft);margin:-6px 0 10px;">Click any row to see full fee details.</p>
+  <div class="field" style="max-width:340px;">
+    <input type="text" id="studentSearch" placeholder="Search by name, class, or code…">
+  </div>
+  <p style="font-size:12px;color:var(--ink-soft);margin:10px 0 10px;">Sorted alphabetically by last name. Click any row to see full fee details.</p>
   <div class="table-scroll">
   <table class="admin-table">
     <thead>
@@ -209,6 +212,14 @@ async function getNextIndex(existingCodesSnap) {
   return maxIndex + 1;
 }
 
+let allStudentsCache = []; // [{id, student, codeInfo}], refreshed by loadStudentsTable()
+
+// Last name = first word of the stored name, matching the format used
+// everywhere else in this project (code_registry.json, generateCode(), etc).
+function lastNameOf(fullName) {
+  return (fullName || '').trim().split(/\s+/)[0] || '';
+}
+
 async function loadStudentsTable() {
   const tbody = document.getElementById('studentTableBody');
   const [studentsSnap, codesSnap] = await Promise.all([
@@ -219,17 +230,33 @@ async function loadStudentsTable() {
   const codesByStudent = {};
   codesSnap.forEach(d => { codesByStudent[d.data().studentId] = { code: d.id, ...d.data() }; });
 
-  document.getElementById('studentCount').textContent = `${studentsSnap.size} student${studentsSnap.size === 1 ? '' : 's'}`;
+  allStudentsCache = [];
+  studentsSnap.forEach(d => {
+    allStudentsCache.push({ id: d.id, student: d.data(), codeInfo: codesByStudent[d.id] });
+  });
 
-  if (studentsSnap.empty) {
-    tbody.innerHTML = `<tr><td colspan="4" class="loading">No students yet — issue a code above to add the first one.</td></tr>`;
+  // Alphabetical by last name, then by full name as a tiebreaker for
+  // students who share a last name.
+  allStudentsCache.sort((a, b) => {
+    const lastCompare = lastNameOf(a.student.name).localeCompare(lastNameOf(b.student.name));
+    if (lastCompare !== 0) return lastCompare;
+    return (a.student.name || '').localeCompare(b.student.name || '');
+  });
+
+  renderStudentRows(allStudentsCache);
+}
+
+function renderStudentRows(list) {
+  const tbody = document.getElementById('studentTableBody');
+  document.getElementById('studentCount').textContent = `${list.length} student${list.length === 1 ? '' : 's'}`;
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="4" class="loading">${allStudentsCache.length ? 'No students match your search.' : 'No students yet — issue a code above to add the first one.'}</td></tr>`;
     return;
   }
 
   tbody.innerHTML = '';
-  studentsSnap.forEach(d => {
-    const student = d.data();
-    const codeInfo = codesByStudent[d.id];
+  list.forEach(({ id, student, codeInfo }) => {
     const tr = document.createElement('tr');
     tr.className = 'clickable-row';
     tr.innerHTML = `
@@ -241,10 +268,21 @@ async function loadStudentsTable() {
             ? '<span class="badge claimed">Account created</span>'
             : '<span class="badge unclaimed">Code not yet used</span>')
         : '—'}</td>`;
-    tr.addEventListener('click', () => openStudentDetail(d.id, student, codeInfo));
+    tr.addEventListener('click', () => openStudentDetail(id, student, codeInfo));
     tbody.appendChild(tr);
   });
 }
+
+document.getElementById('studentSearch').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) { renderStudentRows(allStudentsCache); return; }
+  const filtered = allStudentsCache.filter(({ student, codeInfo }) => {
+    return (student.name || '').toLowerCase().includes(q)
+      || (student.class || '').toLowerCase().includes(q)
+      || (codeInfo && codeInfo.code || '').toLowerCase().includes(q);
+  });
+  renderStudentRows(filtered);
+});
 
 document.getElementById('newCodeForm').addEventListener('submit', async (e) => {
   e.preventDefault();
